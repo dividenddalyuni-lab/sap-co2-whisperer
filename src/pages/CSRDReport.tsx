@@ -144,7 +144,7 @@ export default function CSRDReportPage() {
 }
 
 function ScopeSection({ title, description, lines, total }: {
-  title: string; description: string; lines: typeof import("@/lib/types").CalculatedLine extends never ? never : any[]; total: number;
+  title: string; description: string; lines: any[]; total: number;
 }) {
   return (
     <section>
