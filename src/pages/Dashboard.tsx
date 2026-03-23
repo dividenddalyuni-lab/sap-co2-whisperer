@@ -1,5 +1,4 @@
 import { useApp } from "@/context/AppContext";
-import AppLayout from "@/components/layout/AppLayout";
 import { formatTonnes, formatNumber, scopeTotal, qualityColor, statusIcon, statusLabel, formatEuro } from "@/lib/co2-utils";
 import { AlertTriangle, TrendingDown, BarChart3, Zap } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
