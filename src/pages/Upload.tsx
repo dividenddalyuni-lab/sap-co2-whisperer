@@ -52,9 +52,15 @@ export default function UploadPage() {
   }, [parseFile]);
 
   const handleLoadDemo = (source: string) => {
-    setUploadedLines(demoData);
-    setBookingLines(demoData);
-    setFileName(`demo-${source}.xlsx`);
+    const dataMap: Record<string, { data: BookingLine[]; file: string }> = {
+      demo: { data: demoData, file: "demo-frosta-gmbh.xlsx" },
+      sap: { data: sapDemoData, file: "sap-export-hamburg.xlsx" },
+      datev: { data: datevDemoData, file: "datev-export-muenchen.csv" },
+    };
+    const { data, file } = dataMap[source] || dataMap.demo;
+    setUploadedLines(data);
+    setBookingLines(data);
+    setFileName(file);
   };
 
   const handleStartAnalysis = () => {
