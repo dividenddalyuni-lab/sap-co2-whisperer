@@ -31,7 +31,7 @@ export default function DashboardPage() {
   const barData = Array.from(ksMap.entries()).map(([name, value]) => ({ name, value: +value.toFixed(2) }));
 
   return (
-    <AppLayout>
+    <>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
