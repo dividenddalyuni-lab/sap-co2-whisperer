@@ -182,8 +182,10 @@ export default function UploadPage() {
         </button>
       </div>
 
-      {/* Data Source Buttons */}
-      <div className="grid grid-cols-3 gap-3">
+      {/* AI Connections */}
+      <div>
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">AI Connections</h3>
+        <div className="grid grid-cols-3 gap-3">
         {[
           { label: "Demo-Daten", icon: Database, source: "demo" },
           { label: "SAP-Connection", icon: LinkIcon, source: "sap" },
