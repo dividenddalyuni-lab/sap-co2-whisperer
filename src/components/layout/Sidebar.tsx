@@ -5,6 +5,12 @@ import { AppScreen } from "@/lib/types";
 
 const navSections = [
   {
+    label: "DATEN",
+    items: [
+      { id: "upload" as AppScreen, label: "Datenimport", icon: BarChart3 },
+    ],
+  },
+  {
     label: "ANALYSE",
     items: [
       { id: "dashboard" as AppScreen, label: "Dashboard", icon: LayoutDashboard },

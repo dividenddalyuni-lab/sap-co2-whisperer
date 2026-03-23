@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider, useApp } from "@/context/AppContext";
+import AppLayout from "@/components/layout/AppLayout";
 import UploadPage from "@/pages/Upload";
 import AnalysisPage from "@/pages/Analysis";
 import DashboardPage from "@/pages/Dashboard";
@@ -12,13 +13,16 @@ const queryClient = new QueryClient();
 
 function ScreenRouter() {
   const { screen } = useApp();
-  switch (screen) {
-    case "upload": return <UploadPage />;
-    case "analysis": return <AnalysisPage />;
-    case "dashboard": return <DashboardPage />;
-    case "csrd-report": return <CSRDReportPage />;
-    default: return <UploadPage />;
-  }
+
+  if (screen === "analysis") return <AnalysisPage />;
+
+  return (
+    <AppLayout>
+      {screen === "upload" && <UploadPage />}
+      {screen === "dashboard" && <DashboardPage />}
+      {screen === "csrd-report" && <CSRDReportPage />}
+    </AppLayout>
+  );
 }
 
 const App = () => (
