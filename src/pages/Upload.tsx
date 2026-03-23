@@ -79,16 +79,15 @@ export default function UploadPage() {
         <p className="text-sm text-muted-foreground mt-1">SAP Kostenstellen-Export hochladen und Analyse starten</p>
       </div>
 
-      {/* API Key Warning */}
-      {!apiKey && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-warning/10 border border-warning/30 rounded-lg">
-          <AlertCircle className="w-4 h-4 text-warning shrink-0" />
-          <p className="text-sm text-warning">
-            Kein Claude API Key hinterlegt — Demo-Analyse wird verwendet.{" "}
-            <SettingsDialog />
-          </p>
+      {/* AI API Key Options */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-primary/10 border border-primary/30 rounded-lg">
+        <p className="text-sm text-primary font-medium">
+          AI API Key Options
+        </p>
+        <div className="ml-auto">
+          <SettingsDialog />
         </div>
-      )}
+      </div>
 
       {error && (
         <div className="flex items-center gap-3 px-4 py-3 bg-destructive/10 border border-destructive/30 rounded-lg">
