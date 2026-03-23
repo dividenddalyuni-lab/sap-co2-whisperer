@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Upload, FileSpreadsheet, AlertCircle, Database, LinkIcon, FileDigit } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-import { demoData } from "@/lib/demo-data";
+import { demoData, sapDemoData, datevDemoData } from "@/lib/demo-data";
 import { BookingLine } from "@/lib/types";
 import { formatEuro } from "@/lib/co2-utils";
 import SettingsDialog from "@/components/SettingsDialog";
@@ -52,9 +52,15 @@ export default function UploadPage() {
   }, [parseFile]);
 
   const handleLoadDemo = (source: string) => {
-    setUploadedLines(demoData);
-    setBookingLines(demoData);
-    setFileName(`demo-${source}.xlsx`);
+    const dataMap: Record<string, { data: BookingLine[]; file: string }> = {
+      demo: { data: demoData, file: "demo-frosta-gmbh.xlsx" },
+      sap: { data: sapDemoData, file: "sap-export-hamburg.xlsx" },
+      datev: { data: datevDemoData, file: "datev-export-muenchen.csv" },
+    };
+    const { data, file } = dataMap[source] || dataMap.demo;
+    setUploadedLines(data);
+    setBookingLines(data);
+    setFileName(file);
   };
 
   const handleStartAnalysis = () => {
@@ -177,12 +183,11 @@ export default function UploadPage() {
       </div>
 
       {/* Data Source Buttons */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {[
           { label: "Demo-Daten", icon: Database, source: "demo" },
           { label: "SAP-Connection", icon: LinkIcon, source: "sap" },
           { label: "DATEV-Connection", icon: FileDigit, source: "datev" },
-          { label: "Excel-Upload", icon: FileSpreadsheet, source: "excel" },
         ].map((item) => {
           const Icon = item.icon;
           return (
