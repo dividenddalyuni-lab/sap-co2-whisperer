@@ -51,10 +51,10 @@ export default function UploadPage() {
     if (file) parseFile(file);
   }, [parseFile]);
 
-  const handleLoadDemo = () => {
+  const handleLoadDemo = (source: string) => {
     setUploadedLines(demoData);
     setBookingLines(demoData);
-    setFileName("demo-frosta-gmbh.xlsx");
+    setFileName(`demo-${source}.xlsx`);
   };
 
   const handleStartAnalysis = () => {
