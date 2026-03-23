@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Upload, FileSpreadsheet, Leaf, AlertCircle } from "lucide-react";
+import { Upload, FileSpreadsheet, AlertCircle, Database, LinkIcon, FileDigit } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { demoData } from "@/lib/demo-data";
 import { BookingLine } from "@/lib/types";
