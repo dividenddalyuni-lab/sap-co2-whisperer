@@ -1,5 +1,4 @@
 import { useApp } from "@/context/AppContext";
-import AppLayout from "@/components/layout/AppLayout";
 import { formatTonnes, formatNumber, scopeTotal, qualityColor, statusIcon, statusLabel, formatEuro } from "@/lib/co2-utils";
 import { AlertTriangle, TrendingDown, BarChart3, Zap } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
@@ -32,7 +31,7 @@ export default function DashboardPage() {
   const barData = Array.from(ksMap.entries()).map(([name, value]) => ({ name, value: +value.toFixed(2) }));
 
   return (
-    <AppLayout>
+    <>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -184,7 +183,7 @@ export default function DashboardPage() {
           <span className="text-[10px] text-muted-foreground uppercase tracking-wider">GHG Protocol</span>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
 

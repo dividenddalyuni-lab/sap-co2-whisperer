@@ -1,5 +1,4 @@
 import { useApp } from "@/context/AppContext";
-import AppLayout from "@/components/layout/AppLayout";
 import { formatTonnes, scopeTotal, formatEuro } from "@/lib/co2-utils";
 import { FileText, RotateCcw } from "lucide-react";
 
@@ -24,7 +23,7 @@ export default function CSRDReportPage() {
   const handlePrint = () => window.print();
 
   return (
-    <AppLayout>
+    <>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -139,7 +138,7 @@ export default function CSRDReportPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
 
