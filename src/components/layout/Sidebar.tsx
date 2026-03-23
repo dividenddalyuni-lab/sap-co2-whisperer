@@ -1,25 +1,27 @@
-import { Leaf, LayoutDashboard, FileText, Settings, BarChart3 } from "lucide-react";
+import { Leaf, LayoutDashboard, FileText, BarChart3, Diamond, Database } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { cn } from "@/lib/utils";
 import { AppScreen } from "@/lib/types";
 
 const navSections = [
   {
-    label: "DATEN",
-    items: [
-      { id: "upload" as AppScreen, label: "Datenimport", icon: BarChart3 },
-    ],
-  },
-  {
     label: "ANALYSE",
     items: [
       { id: "dashboard" as AppScreen, label: "Dashboard", icon: LayoutDashboard },
+      { id: "anomalies" as AppScreen, label: "Anomalie-Erkennung", icon: Diamond, badge: 3 },
     ],
   },
   {
     label: "COMPLIANCE",
     items: [
       { id: "csrd-report" as AppScreen, label: "CSRD Report", icon: FileText },
+      { id: "ai-assistant" as AppScreen, label: "KI-Assistent", icon: Diamond },
+    ],
+  },
+  {
+    label: "ADMINISTRATION",
+    items: [
+      { id: "upload" as AppScreen, label: "Datenquellen", icon: Database },
     ],
   },
 ];
@@ -62,7 +64,12 @@ export default function Sidebar() {
                   )}
                 >
                   <Icon className="w-4 h-4" />
-                  {item.label}
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {"badge" in item && item.badge && (
+                    <span className="px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] text-center">
+                      {item.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -74,8 +81,9 @@ export default function Sidebar() {
       <div className="px-4 py-4 border-t border-sidebar-border">
         <div className="flex items-center gap-2 text-xs text-sidebar-muted">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse-green" />
-          <span>Demo-Modus aktiv</span>
+          <span>SAP FICO — synchronisiert</span>
         </div>
+        <div className="text-[10px] text-sidebar-muted/60 mt-1 ml-4">Letzte Aktualisierung: 11.03.2026, 14:42</div>
       </div>
     </aside>
   );
