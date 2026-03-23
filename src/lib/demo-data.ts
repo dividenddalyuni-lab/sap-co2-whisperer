@@ -13,6 +13,32 @@ export const demoData: BookingLine[] = [
   { id: 9, kostenstelle: "5000 Einkauf", konto: "70100", buchungstext: "Rohwaren Import Südamerika Seafood", betrag: 128000, periode: "Q1 2024" },
 ];
 
+export const sapDemoData: BookingLine[] = [
+  { id: 0, kostenstelle: "CC-1000 Fertigung", konto: "400000", buchungstext: "SAP: Stromverbrauch Werk Hamburg Q1", betrag: 32500, periode: "Q1 2024" },
+  { id: 1, kostenstelle: "CC-1000 Fertigung", konto: "400100", buchungstext: "SAP: Gasverbrauch Produktionshalle", betrag: 14800, periode: "Jan 2024" },
+  { id: 2, kostenstelle: "CC-2000 Lager", konto: "401000", buchungstext: "SAP: Strom Kühlhaus Standort Nord", betrag: 19600, periode: "Feb 2024" },
+  { id: 3, kostenstelle: "CC-3000 Fuhrpark", konto: "580000", buchungstext: "SAP: Diesel Fahrzeugflotte 12 LKW", betrag: 22100, periode: "Q1 2024" },
+  { id: 4, kostenstelle: "CC-3000 Fuhrpark", konto: "580100", buchungstext: "SAP: AdBlue Verbrauch Fuhrpark", betrag: 1850, periode: "Q1 2024" },
+  { id: 5, kostenstelle: "CC-4000 IT", konto: "620000", buchungstext: "SAP: Rechenzentrum Strom AWS Frankfurt", betrag: 8900, periode: "Q1 2024" },
+  { id: 6, kostenstelle: "CC-5000 Verwaltung", konto: "650000", buchungstext: "SAP: Dienstreisen Inland Bahn", betrag: 3200, periode: "Q1 2024" },
+  { id: 7, kostenstelle: "CC-5000 Verwaltung", konto: "650100", buchungstext: "SAP: Dienstreisen Flug International", betrag: 7600, periode: "Q1 2024" },
+  { id: 8, kostenstelle: "CC-6000 Einkauf", konto: "700000", buchungstext: "SAP: Rohstoffe Lieferant Meyer AG", betrag: 95000, periode: "Q1 2024" },
+  { id: 9, kostenstelle: "CC-6000 Einkauf", konto: "700100", buchungstext: "SAP: Verpackung Kartonage Schmidt", betrag: 28000, periode: "Q1 2024" },
+  { id: 10, kostenstelle: "CC-1000 Fertigung", konto: "400200", buchungstext: "SAP: Fernwärme Werk Hamburg", betrag: 11200, periode: "Q1 2024" },
+  { id: 11, kostenstelle: "CC-7000 Entsorgung", konto: "750000", buchungstext: "SAP: Abfallentsorgung Remondis", betrag: 6400, periode: "Q1 2024" },
+];
+
+export const datevDemoData: BookingLine[] = [
+  { id: 0, kostenstelle: "KST 100 Büro", konto: "4200", buchungstext: "DATEV: Stadtwerke München Strom Büro", betrag: 4200, periode: "Jan 2024" },
+  { id: 1, kostenstelle: "KST 100 Büro", konto: "4210", buchungstext: "DATEV: Erdgas Heizung Bürogebäude", betrag: 2800, periode: "Jan 2024" },
+  { id: 2, kostenstelle: "KST 100 Büro", konto: "4220", buchungstext: "DATEV: Fernwärme Nebengebäude", betrag: 1500, periode: "Feb 2024" },
+  { id: 3, kostenstelle: "KST 200 Vertrieb", konto: "4500", buchungstext: "DATEV: PKW Leasing Außendienst Diesel", betrag: 3600, periode: "Q1 2024" },
+  { id: 4, kostenstelle: "KST 200 Vertrieb", konto: "4510", buchungstext: "DATEV: Tankkarte Shell Außendienst", betrag: 2100, periode: "Feb 2024" },
+  { id: 5, kostenstelle: "KST 200 Vertrieb", konto: "4520", buchungstext: "DATEV: DB Bahncard Business Reisen", betrag: 890, periode: "Q1 2024" },
+  { id: 6, kostenstelle: "KST 300 Marketing", konto: "4600", buchungstext: "DATEV: Druckerei Flyer & Kataloge", betrag: 5200, periode: "Q1 2024" },
+  { id: 7, kostenstelle: "KST 400 Personal", konto: "4700", buchungstext: "DATEV: Pendlerpauschale Zuschuss MA", betrag: 12000, periode: "Q1 2024" },
+];
+
 export const mockClaudeResponse: ClaudeResponse = {
   zeilen: [
     { zeile_id: 0, kategorie: "Strom", scope: 2, emissionsfaktor: 0.380, einheit: "kWh", umrechnungsfaktor: 0.28, quelle: "UBA 2024", konfidenz: "hoch", status: "ok", begruendung: "Stromrechnung Stadtwerke, Scope 2 Energiebezug" },

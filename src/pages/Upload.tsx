@@ -183,12 +183,11 @@ export default function UploadPage() {
       </div>
 
       {/* Data Source Buttons */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {[
           { label: "Demo-Daten", icon: Database, source: "demo" },
           { label: "SAP-Connection", icon: LinkIcon, source: "sap" },
           { label: "DATEV-Connection", icon: FileDigit, source: "datev" },
-          { label: "Excel-Upload", icon: FileSpreadsheet, source: "excel" },
         ].map((item) => {
           const Icon = item.icon;
           return (
