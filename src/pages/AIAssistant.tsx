@@ -34,7 +34,7 @@ export default function AIAssistantPage() {
       parts.push(`Geladene Buchungszeilen (${bookingLines.length}): ${JSON.stringify(bookingLines.slice(0, 20))}`);
     }
     if (calculatedLines.length > 0) {
-      const totalCO2 = calculatedLines.reduce((s, l) => s + l.co2_kg, 0);
+      const totalCO2 = calculatedLines.reduce((s, l) => s + l.kg_co2, 0);
       parts.push(`Berechnete Emissionen: ${calculatedLines.length} Zeilen, Gesamt ${(totalCO2 / 1000).toFixed(1)} t CO₂e`);
     }
     if (claudeResponse?.anomalien) {
