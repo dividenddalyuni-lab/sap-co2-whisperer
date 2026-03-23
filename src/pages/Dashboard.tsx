@@ -183,7 +183,7 @@ export default function DashboardPage() {
           <span className="text-[10px] text-muted-foreground uppercase tracking-wider">GHG Protocol</span>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
 

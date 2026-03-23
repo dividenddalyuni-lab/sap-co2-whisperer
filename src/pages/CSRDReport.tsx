@@ -138,7 +138,7 @@ export default function CSRDReportPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
 
