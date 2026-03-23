@@ -1,5 +1,4 @@
 import { useApp } from "@/context/AppContext";
-import AppLayout from "@/components/layout/AppLayout";
 import { formatTonnes, scopeTotal, formatEuro } from "@/lib/co2-utils";
 import { FileText, RotateCcw } from "lucide-react";
 
