@@ -174,12 +174,28 @@ export default function UploadPage() {
         >
           Analyse starten
         </button>
-        <button
-          onClick={handleLoadDemo}
-          className="px-6 py-3 border border-border text-muted-foreground hover:text-foreground hover:border-primary/40 font-medium rounded-xl transition-colors text-sm"
-        >
-          Demo-Daten laden
-        </button>
+      </div>
+
+      {/* Data Source Buttons */}
+      <div className="grid grid-cols-4 gap-3">
+        {[
+          { label: "Demo-Daten", icon: Database, source: "demo" },
+          { label: "SAP-Connection", icon: LinkIcon, source: "sap" },
+          { label: "DATEV-Connection", icon: FileDigit, source: "datev" },
+          { label: "Excel-Upload", icon: FileSpreadsheet, source: "excel" },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.source}
+              onClick={() => handleLoadDemo(item.source)}
+              className="flex flex-col items-center gap-2 px-4 py-4 border border-border rounded-xl text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors text-sm"
+            >
+              <Icon className="w-6 h-6" />
+              <span className="font-medium text-xs">{item.label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
