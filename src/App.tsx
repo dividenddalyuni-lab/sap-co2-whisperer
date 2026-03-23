@@ -8,6 +8,8 @@ import UploadPage from "@/pages/Upload";
 import AnalysisPage from "@/pages/Analysis";
 import DashboardPage from "@/pages/Dashboard";
 import CSRDReportPage from "@/pages/CSRDReport";
+import AnomaliesPage from "@/pages/Anomalies";
+import AIAssistantPage from "@/pages/AIAssistant";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,8 @@ function ScreenRouter() {
       {screen === "upload" && <UploadPage />}
       {screen === "dashboard" && <DashboardPage />}
       {screen === "csrd-report" && <CSRDReportPage />}
+      {screen === "anomalies" && <AnomaliesPage />}
+      {screen === "ai-assistant" && <AIAssistantPage />}
     </AppLayout>
   );
 }
