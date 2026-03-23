@@ -102,6 +102,62 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Energiekosten & KI-Sparpotenzial */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Energiekosten 2024 */}
+          <div className="bg-card rounded-xl border border-border p-5">
+            <h3 className="text-sm font-semibold mb-4">Energiekosten 2024</h3>
+            <p className="text-3xl font-extrabold text-foreground mb-1">€ {formatNumber(totalBetrag / 1000000, 2)} Mio.</p>
+            <p className="text-xs text-muted-foreground mb-5">entspricht ca. {formatNumber(total * 1000, 0)} t CO₂e</p>
+            {energyCosts.map((item, i) => (
+              <div key={i} className="mb-3">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-foreground">{item.label}</span>
+                  <span className="font-medium text-foreground">€ {formatNumber(item.value / 1000000, 2)} Mio.</span>
+                </div>
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${totalBetrag > 0 ? (item.value / totalBetrag) * 100 : 0}%`, background: item.color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* KI-Sparpotenzial */}
+          <div className="bg-card rounded-xl border border-border p-5">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-semibold">KI-Sparpotenzial</h3>
+                <p className="text-xs text-muted-foreground">Automatisch erkannte Maßnahmen · GJ 2024</p>
+              </div>
+              <span className="px-2.5 py-1 border border-border rounded-lg text-xs font-medium">3 Empfehlungen</span>
+            </div>
+            <div className="space-y-4">
+              {savingsMeasures.map((m, i) => (
+                <div key={i} className="flex items-start justify-between pb-3 border-b border-border last:border-0">
+                  <div>
+                    <p className="text-sm font-semibold flex items-center gap-2">
+                      <span>{m.icon}</span> {m.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {m.description} · Einsparung <span className="font-semibold text-foreground">€ {formatNumber(m.savingsEur, 0)}/Jahr</span>
+                    </p>
+                  </div>
+                  <span className="shrink-0 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-lg">
+                    − {formatNumber(m.savingsCo2, 0)} t CO₂
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 px-4 py-3 bg-primary/5 rounded-lg flex items-center justify-between">
+              <span className="text-sm font-semibold text-primary">Gesamt Potenzial</span>
+              <span className="text-sm font-semibold text-foreground">
+                − {formatNumber(savingsMeasures.reduce((a, m) => a + m.savingsCo2, 0), 0)} t CO₂ · € {formatNumber(savingsMeasures.reduce((a, m) => a + m.savingsEur, 0), 0)}/Jahr
+              </span>
+            </div>
+          </div>
         {/* Anomalies */}
         {claudeResponse.anomalien.length > 0 && (
           <div className="space-y-3">
