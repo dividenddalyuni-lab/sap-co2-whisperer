@@ -14,7 +14,7 @@ const quickActions = [
 ];
 
 const SYSTEM_PROMPT = `Du bist der CLYMAIQ KI-Assistent, ein Experte für ESG-Analyse, CO₂-Bilanzierung nach GHG Protocol und CSRD/ESRS Compliance.
-Du analysierst SAP FICO-Buchungsdaten eines deutschen Unternehmens (Frosta GmbH, Geschäftsjahr 2024).
+Du analysierst SAP FICO-Buchungsdaten eines deutschen Unternehmens (Muster GmbH, Geschäftsjahr 2024).
 Antworte immer auf Deutsch, präzise und fachlich fundiert. Verwende Zahlen und konkrete Empfehlungen wo möglich.`;
 
 export default function AIAssistantPage() {
@@ -111,7 +111,7 @@ export default function AIAssistantPage() {
       <div className="flex items-center justify-between mb-6">
         <p className="text-xs text-muted-foreground">CLYMAIQ ESG / <span className="font-semibold text-foreground">KI-Assistent</span></p>
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Frosta GmbH</span>
+          <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Muster GmbH</span>
           <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Geschäftsjahr 2024</span>
           <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">FK</div>
         </div>
@@ -131,7 +131,7 @@ export default function AIAssistantPage() {
                   Verbunden · SAP FICO-Daten geladen
                 </p>
               </div>
-              <p className="text-xs text-muted-foreground">Frosta GmbH · GJ 2024 · {bookingLines.length > 0 ? `${bookingLines.length} Buchungen` : "47.384 Buchungen"}</p>
+              <p className="text-xs text-muted-foreground">Muster GmbH · GJ 2024 · {bookingLines.length > 0 ? `${bookingLines.length} Buchungen` : "47.384 Buchungen"}</p>
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function AIAssistantPage() {
           <div className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shrink-0">GS</div>
           <div className="flex-1 bg-card border border-border rounded-xl p-5 text-sm text-foreground/90 space-y-3">
             <p>
-              Guten Tag. Die SAP FICO-Daten der Frosta GmbH wurden vollständig eingelesen — <strong>{bookingLines.length > 0 ? `${bookingLines.length} Buchungen` : "47.384 Buchungen"}</strong>, Zeitraum Januar bis September 2024.
+              Guten Tag. Die SAP FICO-Daten der Muster GmbH wurden vollständig eingelesen — <strong>{bookingLines.length > 0 ? `${bookingLines.length} Buchungen` : "47.384 Buchungen"}</strong>, Zeitraum Januar bis September 2024.
             </p>
             <p>
               Die automatische Analyse hat <strong>3 Buchungsanomalien</strong> sowie <strong>262 t unerwartete CO₂-Emissionen</strong> identifiziert, die den CSRD-Report beeinflussen.
