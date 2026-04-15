@@ -22,7 +22,7 @@ export default function AnalysisPage() {
         </div>
 
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">GreenSight</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">CLYMAIQ</h1>
           <p className="text-white/40 text-sm">KI-Analyse läuft</p>
         </div>
 

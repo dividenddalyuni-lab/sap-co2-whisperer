@@ -27,7 +27,7 @@ export default function CSRDReportPage() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">GreenSight ESG / <span className="font-semibold text-foreground">CSRD Report</span></p>
+          <p className="text-xs text-muted-foreground">CLYMAIQ ESG / <span className="font-semibold text-foreground">CSRD Report</span></p>
           <div className="flex gap-2">
             <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium hover:bg-muted transition-colors">
               <FileText className="w-4 h-4" />
@@ -132,7 +132,7 @@ export default function CSRDReportPage() {
 
             {/* Footer */}
             <div className="border-t border-border pt-4 flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-wider">
-              <span>GreenSight ESG Platform</span>
+              <span>CLYMAIQ ESG Platform</span>
               <span>Powered by Claude AI · GHG Protocol · CSRD / ESRS E1</span>
             </div>
           </div>

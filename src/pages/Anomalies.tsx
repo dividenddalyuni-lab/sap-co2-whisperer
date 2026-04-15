@@ -70,7 +70,7 @@ export default function AnomaliesPage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground">GreenSight ESG / <span className="font-semibold text-foreground">Anomalie-Erkennung</span></p>
+        <p className="text-xs text-muted-foreground">CLYMAIQ ESG / <span className="font-semibold text-foreground">Anomalie-Erkennung</span></p>
         <div className="flex items-center gap-2">
           <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Frosta GmbH</span>
           <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Geschäftsjahr 2024</span>

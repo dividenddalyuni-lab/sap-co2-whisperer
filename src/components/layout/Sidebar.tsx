@@ -37,7 +37,7 @@ export default function Sidebar() {
           <Leaf className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <div className="text-sidebar-foreground font-bold text-sm tracking-wide">GreenSight</div>
+          <div className="text-sidebar-foreground font-bold text-sm tracking-wide">CLYMAIQ</div>
           <div className="text-[10px] text-sidebar-muted tracking-widest uppercase">ESG Platform</div>
         </div>
       </div>
