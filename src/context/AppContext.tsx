@@ -42,13 +42,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [bookingLines, setBookingLines] = useState<BookingLine[]>([]);
   const [claudeResponse, setClaudeResponse] = useState<ClaudeResponse | null>(null);
   const [calculatedLines, setCalculatedLines] = useState<CalculatedLine[]>([]);
-  const [apiKey, setApiKeyState] = useState(() => localStorage.getItem("greensight_api_key") || "");
+  const [apiKey, setApiKeyState] = useState(() => localStorage.getItem("clymaiq_api_key") || "");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState("");
 
   const setApiKey = useCallback((key: string) => {
     setApiKeyState(key);
-    localStorage.setItem("greensight_api_key", key);
+    localStorage.setItem("clymaiq_api_key", key);
   }, []);
 
   const startAnalysis = useCallback(async (useMock = false) => {
