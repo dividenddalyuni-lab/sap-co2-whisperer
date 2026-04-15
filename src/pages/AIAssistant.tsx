@@ -10,10 +10,10 @@ const quickActions = [
   "Warum ist mein EBITDA gesunken?",
   "Scope-3-Emissionen?",
   "CO₂-Neutralität — Prognose",
-  "Kosten ohne GreenSight?",
+  "Kosten ohne CLYMAIQ?",
 ];
 
-const SYSTEM_PROMPT = `Du bist der GreenSight KI-Assistent, ein Experte für ESG-Analyse, CO₂-Bilanzierung nach GHG Protocol und CSRD/ESRS Compliance.
+const SYSTEM_PROMPT = `Du bist der CLYMAIQ KI-Assistent, ein Experte für ESG-Analyse, CO₂-Bilanzierung nach GHG Protocol und CSRD/ESRS Compliance.
 Du analysierst SAP FICO-Buchungsdaten eines deutschen Unternehmens (Frosta GmbH, Geschäftsjahr 2024).
 Antworte immer auf Deutsch, präzise und fachlich fundiert. Verwende Zahlen und konkrete Empfehlungen wo möglich.`;
 
@@ -109,7 +109,7 @@ export default function AIAssistantPage() {
     <div className="p-6 flex flex-col h-[calc(100vh-2rem)]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <p className="text-xs text-muted-foreground">GreenSight ESG / <span className="font-semibold text-foreground">KI-Assistent</span></p>
+        <p className="text-xs text-muted-foreground">CLYMAIQ ESG / <span className="font-semibold text-foreground">KI-Assistent</span></p>
         <div className="flex items-center gap-2">
           <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Frosta GmbH</span>
           <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Geschäftsjahr 2024</span>
@@ -125,7 +125,7 @@ export default function AIAssistantPage() {
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-foreground">GreenSight KI-Assistent</p>
+                <p className="font-semibold text-foreground">CLYMAIQ KI-Assistent</p>
                 <p className="text-xs text-primary flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-primary inline-block" />
                   Verbunden · SAP FICO-Daten geladen

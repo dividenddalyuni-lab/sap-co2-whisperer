@@ -57,7 +57,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground">GreenSight ESG / <span className="font-semibold text-foreground">Dashboard</span></p>
+            <p className="text-xs text-muted-foreground">CLYMAIQ ESG / <span className="font-semibold text-foreground">Dashboard</span></p>
           </div>
           <div className="flex items-center gap-2">
             <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Frosta GmbH</span>
