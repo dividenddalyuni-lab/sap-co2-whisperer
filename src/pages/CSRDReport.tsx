@@ -44,7 +44,7 @@ export default function CSRDReportPage() {
         <div className="bg-card rounded-xl border border-border max-w-4xl mx-auto print:border-none print:shadow-none">
           {/* Title Block */}
           <div className="bg-sidebar text-sidebar-foreground p-8 rounded-t-xl print:bg-[hsl(155,35%,14%)]">
-            <h1 className="text-xl font-bold">CSRD-Nachhaltigkeitsbericht 2024 — Frosta GmbH</h1>
+            <h1 className="text-xl font-bold">CSRD-Nachhaltigkeitsbericht 2024 — Muster GmbH</h1>
             <p className="text-sm text-sidebar-muted mt-1">
               Geschäftsjahr {berichtszeitraum} · ESRS-konform · automatisch aus SAP FI/CO generiert
             </p>

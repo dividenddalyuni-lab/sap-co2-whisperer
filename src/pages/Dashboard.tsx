@@ -60,7 +60,7 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">CLYMAIQ ESG / <span className="font-semibold text-foreground">Dashboard</span></p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Frosta GmbH</span>
+            <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Muster GmbH</span>
             <span className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-medium">Geschäftsjahr 2024</span>
             <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">FK</div>
           </div>
