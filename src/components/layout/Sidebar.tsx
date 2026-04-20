@@ -29,7 +29,8 @@ const navSections = [
 ];
 
 export default function Sidebar() {
-  const { screen, setScreen } = useApp();
+  const { screen, setScreen, calculatedLines } = useApp();
+  const anomalyCount = useMemo(() => detectAnomalies(calculatedLines).length, [calculatedLines]);
 
   return (
     <aside className="w-56 min-h-screen bg-sidebar flex flex-col shrink-0">
@@ -54,6 +55,8 @@ export default function Sidebar() {
             {section.items.map((item) => {
               const Icon = item.icon;
               const active = screen === item.id;
+              const badgeValue =
+                "dynamicBadge" in item && item.dynamicBadge ? anomalyCount : null;
               return (
                 <button
                   key={item.id}
@@ -67,9 +70,9 @@ export default function Sidebar() {
                 >
                   <Icon className="w-4 h-4" />
                   <span className="flex-1 text-left">{item.label}</span>
-                  {"badge" in item && item.badge && (
+                  {badgeValue !== null && badgeValue > 0 && (
                     <span className="px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] text-center">
-                      {item.badge}
+                      {badgeValue}
                     </span>
                   )}
                 </button>
