@@ -180,8 +180,8 @@ export default function DashboardPage() {
           {/* Energiekosten */}
           <div className="bg-card rounded-xl border border-border p-5">
             <h3 className="text-sm font-semibold mb-4">Energiekosten 2024</h3>
-            <p className="text-3xl font-extrabold text-foreground mb-1">€ {formatNumber(totalBetrag / 1000000, 2)} Mio.</p>
-            <p className="text-xs text-muted-foreground mb-5">entspricht ca. {formatNumber(total * 1000, 0)} t CO₂e</p>
+            <p className="text-3xl font-extrabold text-foreground mb-1">€ {formatNumber(energyTotal, 0)}</p>
+            <p className="text-xs text-muted-foreground mb-5">entspricht ca. {formatTonnes(total)} t CO₂e</p>
             {energyCosts.map((item, i) => (
               <div key={i} className="mb-3">
                 <div className="flex justify-between text-sm mb-1">
