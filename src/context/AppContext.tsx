@@ -1,41 +1,11 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { BookingLine, ClaudeResponse, CalculatedLine, AppScreen } from "@/lib/types";
 import { calculateEmissions } from "@/lib/co2-utils";
 import { callClaudeAPI } from "@/lib/claude-api";
 import { buildFallbackResponse } from "@/lib/fallback-classifier";
+import { AppContext, ANALYSIS_STEPS } from "./app-context-core";
 
-interface AppState {
-  screen: AppScreen;
-  setScreen: (s: AppScreen) => void;
-  bookingLines: BookingLine[];
-  setBookingLines: (lines: BookingLine[]) => void;
-  claudeResponse: ClaudeResponse | null;
-  calculatedLines: CalculatedLine[];
-  apiKey: string;
-  setApiKey: (key: string) => void;
-  isAnalyzing: boolean;
-  analysisStep: string;
-  startAnalysis: (useMock?: boolean) => Promise<void>;
-  resetAnalysis: () => void;
-}
-
-const AppContext = createContext<AppState | null>(null);
-
-export function useApp() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error("useApp must be used within AppProvider");
-  return ctx;
-}
-
-const ANALYSIS_STEPS = [
-  "Buchungszeilen werden eingelesen...",
-  "KI klassifiziert Emissionskategorien...",
-  "Anomalien werden geprüft...",
-  "Emissionsfaktoren werden zugeordnet...",
-  "CO₂ wird berechnet nach GHG Protocol...",
-  "Datenqualität wird bewertet...",
-  "CSRD-Report wird erstellt...",
-];
+export { useApp } from "./app-context-core";
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [screen, setScreen] = useState<AppScreen>("upload");
@@ -64,8 +34,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       let response: ClaudeResponse;
       if (useMock || !apiKey) {
-        // Simulate delay for demo, then build a rule-based fallback that
-        // covers ALL uploaded booking lines (not only the demo IDs).
         await new Promise((r) => setTimeout(r, ANALYSIS_STEPS.length * 1500));
         response = buildFallbackResponse(bookingLines);
       } else {
