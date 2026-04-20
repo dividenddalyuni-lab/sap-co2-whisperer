@@ -1,144 +1,70 @@
 import { BookingLine, ClaudeResponse, ClassifiedLine } from "./types";
 
-interface Rule {
+interface EeioRule {
   kategorie: string;
   scope: 1 | 2 | 3;
   scope3_kategorie?: string;
-  emissionsfaktor: number; // kg CO2 per einheit
-  einheit: string;
-  umrechnungsfaktor: number; // EUR per einheit (so einheiten = EUR / umrechnungsfaktor)
+  faktor: number; // kg CO2e per EUR (Spend-Based EEIO)
   quelle: string;
-  konfidenz: "hoch" | "mittel" | "niedrig";
-  begruendung: string;
 }
 
-const RULES: Record<string, Rule> = {
-  strom: {
-    kategorie: "Strom",
-    scope: 2,
-    emissionsfaktor: 0.380,
-    einheit: "kWh",
-    umrechnungsfaktor: 0.28,
-    quelle: "UBA 2024 (Fallback)",
-    konfidenz: "mittel",
-    begruendung: "Stromverbrauch — Scope 2 Energiebezug (EUR→kWh Schätzung)",
-  },
-  diesel: {
-    kategorie: "Diesel",
-    scope: 1,
-    emissionsfaktor: 2.64,
-    einheit: "Liter",
-    umrechnungsfaktor: 1.85,
-    quelle: "UBA 2024 (Fallback)",
-    konfidenz: "mittel",
-    begruendung: "Kraftstoff Diesel — Scope 1 direkte Emissionen",
-  },
-  erdgas: {
-    kategorie: "Erdgas",
-    scope: 1,
-    emissionsfaktor: 2.02,
-    einheit: "m³",
-    umrechnungsfaktor: 0.08,
-    quelle: "UBA 2024 (Fallback)",
-    konfidenz: "mittel",
-    begruendung: "Erdgas Heizung — Scope 1 direkte Verbrennung",
-  },
-  spedition: {
-    kategorie: "Spedition",
-    scope: 3,
-    scope3_kategorie: "Kategorie 4: Upstream Transport",
-    emissionsfaktor: 0.0005,
-    einheit: "EUR_EEIO",
-    umrechnungsfaktor: 0.001,
-    quelle: "GHG Protocol EEIO (Fallback)",
-    konfidenz: "niedrig",
-    begruendung: "Frachtkosten — EEIO-Methode mangels physischer Daten",
-  },
-  reisekosten: {
-    kategorie: "Reisekosten",
-    scope: 3,
-    scope3_kategorie: "Kategorie 6: Geschäftsreisen",
-    emissionsfaktor: 0.0003,
-    einheit: "EUR_EEIO",
-    umrechnungsfaktor: 0.001,
-    quelle: "GHG Protocol EEIO (Fallback)",
-    konfidenz: "niedrig",
-    begruendung: "Geschäftsreisen — EEIO-Methode",
-  },
-  wareneinkauf: {
-    kategorie: "Wareneinkauf",
-    scope: 3,
-    scope3_kategorie: "Kategorie 1: Eingekaufte Güter",
-    emissionsfaktor: 0.0004,
-    einheit: "EUR_EEIO",
-    umrechnungsfaktor: 0.001,
-    quelle: "GHG Protocol EEIO (Fallback)",
-    konfidenz: "niedrig",
-    begruendung: "Eingekaufte Güter — EEIO-Methode",
-  },
-  entsorgung: {
-    kategorie: "Entsorgung",
-    scope: 3,
-    scope3_kategorie: "Kategorie 5: Abfall aus Geschäftstätigkeit",
-    emissionsfaktor: 0.0006,
-    einheit: "EUR_EEIO",
-    umrechnungsfaktor: 0.001,
-    quelle: "GHG Protocol EEIO (Fallback)",
-    konfidenz: "niedrig",
-    begruendung: "Abfallentsorgung — EEIO-Methode",
-  },
-  sonstiges: {
-    kategorie: "Sonstige Beschaffung",
-    scope: 3,
-    scope3_kategorie: "Kategorie 1: Eingekaufte Güter",
-    emissionsfaktor: 0.0003,
-    einheit: "EUR_EEIO",
-    umrechnungsfaktor: 0.001,
-    quelle: "GHG Protocol EEIO (Fallback)",
-    konfidenz: "niedrig",
-    begruendung: "Sonstige Beschaffung — EEIO-Methode (Default)",
-  },
+// Single source of truth: Spend-Based EEIO factors (kg CO2e / EUR)
+// Scope 1 & 2 factors are pre-converted EEIO-equivalents (activity factor × avg. price)
+// so the same formula t CO2e = Betrag € × Faktor / 1000 works for ALL lines.
+const RULES: Record<string, EeioRule> = {
+  strom:        { kategorie: "Strom",            scope: 2, faktor: 0.00136, quelle: "UBA 2024" },
+  fernwaerme:   { kategorie: "Fernwärme",        scope: 2, faktor: 0.00180, quelle: "UBA 2024" },
+  kraftstoff:   { kategorie: "Kraftstoff",       scope: 1, faktor: 0.00143, quelle: "DEFRA 2024" },
+  erdgas:       { kategorie: "Erdgas",           scope: 1, faktor: 0.00253, quelle: "UBA 2024" },
+  transport_str:{ kategorie: "Transport Straße", scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.00050, quelle: "GHG Protocol EEIO" },
+  transport_see:{ kategorie: "Transport See",    scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.00030, quelle: "GHG Protocol EEIO" },
+  transport_luft:{kategorie: "Transport Luft",   scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.00120, quelle: "GHG Protocol EEIO" },
+  dienstreisen: { kategorie: "Dienstreisen",     scope: 3, scope3_kategorie: "Kategorie 6: Geschäftsreisen",     faktor: 0.00030, quelle: "GHG Protocol EEIO" },
+  verpackung:   { kategorie: "Verpackung",       scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00040, quelle: "GHG Protocol EEIO" },
+  rohwaren:     { kategorie: "Rohwaren",         scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00060, quelle: "GHG Protocol EEIO" },
+  abfall:       { kategorie: "Abfall",           scope: 3, scope3_kategorie: "Kategorie 5: Abfall",              faktor: 0.00060, quelle: "GHG Protocol EEIO" },
+  wasser:       { kategorie: "Wasser",           scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00040, quelle: "GHG Protocol EEIO" },
+  sonstiges:    { kategorie: "Sonstige",         scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00030, quelle: "GHG Protocol EEIO" },
 };
 
-function classifyLine(line: BookingLine): Rule {
+function kontoIn(konto: string, from: number, to: number): boolean {
+  const n = parseInt(konto.replace(/\D/g, "").slice(0, 5), 10);
+  return Number.isFinite(n) && n >= from && n <= to;
+}
+
+function classifyLine(line: BookingLine): EeioRule {
   const konto = (line.konto || "").trim();
   const text = (line.buchungstext || "").toLowerCase();
+  const has = (...kws: string[]) => kws.some((k) => text.includes(k));
 
-  const hasKw = (...kws: string[]) => kws.some((k) => text.includes(k));
-  const kontoStarts = (...prefixes: string[]) => prefixes.some((p) => konto.startsWith(p));
+  // Priority 1: account number ranges
+  if (kontoIn(konto, 40000, 40199)) return RULES.strom;
+  if (kontoIn(konto, 40200, 40299)) return RULES.fernwaerme;
+  if (kontoIn(konto, 42000, 42099)) return RULES.wasser;
+  if (kontoIn(konto, 58000, 58099)) return RULES.kraftstoff;
+  if (kontoIn(konto, 58100, 58299)) return RULES.transport_str;
+  if (kontoIn(konto, 58300, 58499)) return RULES.transport_see;
+  if (kontoIn(konto, 58500, 58699)) return RULES.transport_luft;
+  if (kontoIn(konto, 65000, 65099)) return RULES.dienstreisen;
+  if (kontoIn(konto, 65100, 65199)) return RULES.erdgas;
+  if (kontoIn(konto, 68000, 68999)) return RULES.abfall;
+  if (kontoIn(konto, 70000, 70099)) return RULES.verpackung;
+  if (kontoIn(konto, 70100, 70299)) return RULES.rohwaren;
 
-  // Strom — accounts 40000, 40100, 4200, 401, 400
-  if (kontoStarts("40000", "40010", "40100", "4010", "4001", "4000", "4200") || hasKw("strom", "stromrechnung", "stadtwerke", "enercity", "rechenzentrum", "kühlhaus", "kälteanlagen", "kaelteanlagen", "kühl")) {
-    if (hasKw("gas", "erdgas")) return RULES.erdgas;
-    return RULES.strom;
-  }
-  // Erdgas / Gas / Wärme — 65100, 4210, 400100, 400200
-  if (kontoStarts("65100", "6510", "4210", "40010", "40020") || hasKw("erdgas", "gas ", "gasverbrauch", "fernwärme", "fernwaerme", "heizung", "wärme", "waerme")) {
-    return RULES.erdgas;
-  }
-  // Diesel / Kraftstoff — 58000, 580000, 4500, 4510
-  if (kontoStarts("58000", "5800", "4500", "4510") || hasKw("diesel", "tank", "kraftstoff", "adblue", "benzin", "shell", "aral")) {
-    return RULES.diesel;
-  }
-  // Spedition / Fracht — 58100
-  if (kontoStarts("58100", "5810") || hasKw("spedition", "fracht", "schenker", "transport", "logistik")) {
-    return RULES.spedition;
-  }
-  // Reisekosten — 65000, 650, 4520, 4700
-  if (kontoStarts("65000", "6500", "4520", "4700") || hasKw("dienstreise", "reise", "lufthansa", "bahncard", "flug", "bahn", "pendler")) {
-    return RULES.reisekosten;
-  }
-  // Entsorgung — 68000, 750, 7500
-  if (kontoStarts("68000", "6800", "75000", "7500") || hasKw("entsorgung", "abfall", "remondis", "müll", "muell")) {
-    return RULES.entsorgung;
-  }
-  // Wareneinkauf — 70000, 70100, 700, 7000
-  if (kontoStarts("70000", "70100", "7000", "7010", "700")) {
-    return RULES.wareneinkauf;
-  }
-  if (hasKw("rohwaren", "rohstoff", "verpackung", "lieferant", "wareneinkauf", "kartonage", "material")) {
-    return RULES.wareneinkauf;
-  }
+  // Priority 2: keywords in booking text
+  if (has("strom", "energie", "electric")) return RULES.strom;
+  if (has("fernwärme", "fernwaerme", "wärme", "waerme")) return RULES.fernwaerme;
+  if (has("erdgas", "heizung", "gas ")) return RULES.erdgas;
+  if (has("diesel", "kraftstoff", "benzin", "tank")) return RULES.kraftstoff;
+  if (has("seefracht", "schiff", "container")) return RULES.transport_see;
+  if (has("luftfracht", "airfreight", "luftfracht")) return RULES.transport_luft;
+  if (has("spedition", "transport", "fracht", "lkw", "logistik")) return RULES.transport_str;
+  if (has("reise", "flug", "lufthansa", "bahn", "hotel", "dienstreise")) return RULES.dienstreisen;
+  if (has("verpackung", "karton", "folie", "kartonage")) return RULES.verpackung;
+  if (has("rohwaren", "rohstoff", "lebensmittel", "seafood", "fisch")) return RULES.rohwaren;
+  if (has("entsorgung", "abfall", "müll", "muell", "recycling")) return RULES.abfall;
+  if (has("wasser", "wasserversorgung")) return RULES.wasser;
+
   return RULES.sonstiges;
 }
 
@@ -150,13 +76,13 @@ export function buildFallbackResponse(bookingLines: BookingLine[]): ClaudeRespon
       kategorie: rule.kategorie,
       scope: rule.scope,
       scope3_kategorie: rule.scope3_kategorie,
-      emissionsfaktor: rule.emissionsfaktor,
-      einheit: rule.einheit,
-      umrechnungsfaktor: rule.umrechnungsfaktor,
+      emissionsfaktor: rule.faktor, // kg CO2e / EUR
+      einheit: "EUR_EEIO",
+      umrechnungsfaktor: 1,         // identity: betrag stays in EUR
       quelle: rule.quelle,
-      konfidenz: rule.konfidenz,
-      status: rule.konfidenz === "hoch" ? "ok" : rule.konfidenz === "mittel" ? "ok" : "pruefen",
-      begruendung: rule.begruendung,
+      konfidenz: "mittel",
+      status: "ok",
+      begruendung: `Spend-Based EEIO: ${rule.faktor} kg CO₂e/€ (${rule.quelle})`,
     };
   });
 
@@ -169,8 +95,8 @@ export function buildFallbackResponse(bookingLines: BookingLine[]): ClaudeRespon
     empfehlung: "Lieferantenspezifische Emissionsdaten anfordern",
   }));
 
-  const lowConfCount = zeilen.filter((z) => z.konfidenz === "niedrig").length;
-  const score = Math.max(45, Math.min(85, Math.round(85 - (lowConfCount / Math.max(zeilen.length, 1)) * 40)));
+  // Data quality score: pure EEIO ⇒ baseline ~70 (good methodology coverage, low granularity)
+  const score = bookingLines.length === 0 ? 0 : 72;
 
   return {
     zeilen,
@@ -179,14 +105,14 @@ export function buildFallbackResponse(bookingLines: BookingLine[]): ClaudeRespon
       score,
       fehlende_scopes: [
         "Scope 3 Kategorie 11: Nutzung verkaufter Produkte",
-        "Scope 3 Kategorie 12: End-of-Life",
-        "Scope 2: Marktbasierte Methode",
+        "Scope 3 Kategorie 12: End-of-Life behandelter Produkte",
+        "Scope 2: Marktbasierte Methode (aktuell nur EEIO-Schätzung)",
       ],
       empfehlungen: [
-        "Claude API-Key hinterlegen für präzisere KI-Klassifikation",
-        "Stromverbrauch in kWh direkt aus Rechnung erfassen",
-        "Lieferantendaten für Scope 3 Kategorie 1 anfordern",
-        "Tankquittungen für genauere Diesel-Mengen nutzen",
+        "Stromverbrauch in kWh direkt aus Rechnungen erfassen für Aktivitätsdaten-Methode",
+        "Lieferantenspezifische Emissionsfaktoren für Scope 3 Kategorie 1 anfordern",
+        "Tankquittungen mit Litermengen für genauere Diesel-Bilanzierung nutzen",
+        "Claude API-Key hinterlegen für KI-gestützte Anomalie-Erkennung",
       ],
     },
   };

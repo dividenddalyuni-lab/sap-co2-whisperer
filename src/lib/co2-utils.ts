@@ -4,13 +4,14 @@ export function calculateEmissions(
   bookingLines: BookingLine[],
   claudeResponse: ClaudeResponse
 ): CalculatedLine[] {
+  // Single Spend-Based EEIO formula for ALL lines:
+  //   t CO2e = Betrag (€) × Emissionsfaktor (kg CO2e/€) ÷ 1000
   return claudeResponse.zeilen
     .map((z) => {
       const original = bookingLines.find((b) => b.id === z.zeile_id);
       if (!original) return null;
-      const umrechnung = z.umrechnungsfaktor || 1;
-      const einheiten = original.betrag / umrechnung;
-      const kg_co2 = einheiten * z.emissionsfaktor;
+      const einheiten = original.betrag; // EUR is the activity unit in EEIO
+      const kg_co2 = original.betrag * z.emissionsfaktor;
       const t_co2 = kg_co2 / 1000;
       return { ...z, original, einheiten, kg_co2, t_co2 };
     })
