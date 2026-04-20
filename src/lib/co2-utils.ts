@@ -4,13 +4,17 @@ export function calculateEmissions(
   bookingLines: BookingLine[],
   claudeResponse: ClaudeResponse
 ): CalculatedLine[] {
-  return claudeResponse.zeilen.map((z) => {
-    const original = bookingLines.find((b) => b.id === z.zeile_id)!;
-    const einheiten = original.betrag / z.umrechnungsfaktor;
-    const kg_co2 = einheiten * z.emissionsfaktor;
-    const t_co2 = kg_co2 / 1000;
-    return { ...z, original, einheiten, kg_co2, t_co2 };
-  });
+  return claudeResponse.zeilen
+    .map((z) => {
+      const original = bookingLines.find((b) => b.id === z.zeile_id);
+      if (!original) return null;
+      const umrechnung = z.umrechnungsfaktor || 1;
+      const einheiten = original.betrag / umrechnung;
+      const kg_co2 = einheiten * z.emissionsfaktor;
+      const t_co2 = kg_co2 / 1000;
+      return { ...z, original, einheiten, kg_co2, t_co2 };
+    })
+    .filter((l): l is NonNullable<typeof l> => l !== null);
 }
 
 export function formatEuro(n: number): string {

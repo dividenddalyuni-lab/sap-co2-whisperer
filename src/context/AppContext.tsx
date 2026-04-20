@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { BookingLine, ClaudeResponse, CalculatedLine, AppScreen } from "@/lib/types";
 import { calculateEmissions } from "@/lib/co2-utils";
 import { callClaudeAPI } from "@/lib/claude-api";
-import { mockClaudeResponse } from "@/lib/demo-data";
+import { buildFallbackResponse } from "@/lib/fallback-classifier";
 
 interface AppState {
   screen: AppScreen;
@@ -64,11 +64,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       let response: ClaudeResponse;
       if (useMock || !apiKey) {
-        // Simulate delay for demo
+        // Simulate delay for demo, then build a rule-based fallback that
+        // covers ALL uploaded booking lines (not only the demo IDs).
         await new Promise((r) => setTimeout(r, ANALYSIS_STEPS.length * 1500));
-        response = mockClaudeResponse;
+        response = buildFallbackResponse(bookingLines);
       } else {
-        response = await callClaudeAPI(apiKey, bookingLines);
+        try {
+          response = await callClaudeAPI(apiKey, bookingLines);
+        } catch (apiErr) {
+          console.warn("Claude API failed, using fallback classifier:", apiErr);
+          response = buildFallbackResponse(bookingLines);
+        }
       }
 
       setClaudeResponse(response);
@@ -76,8 +82,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setScreen("dashboard");
     } catch (err) {
       console.error("Analysis failed:", err);
-      // Fallback to mock on error
-      const response = mockClaudeResponse;
+      const response = buildFallbackResponse(bookingLines);
       setClaudeResponse(response);
       setCalculatedLines(calculateEmissions(bookingLines, response));
       setScreen("dashboard");
