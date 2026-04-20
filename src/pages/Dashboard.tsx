@@ -21,26 +21,26 @@ const MONTH_LOOKUP: Record<string, number> = {
 };
 
 function buildMonthlyData(lines: CalculatedLine[]): { name: string; value: number }[] {
-  const months = new Array(12).fill(0);
-  const seen = new Array(12).fill(false);
+  // Step 1: classify each line into direct month or quarter bucket
+  const directByMonth = new Array(12).fill(0);
+  const quarterTotals = [0, 0, 0, 0]; // Q1..Q4 totals (full quarter sum, NOT yet divided)
+  const directSeen = new Array(12).fill(false);
+  const quarterSeen = [false, false, false, false];
 
   for (const l of lines) {
     const periode = (l.original.periode || "").trim().toLowerCase();
     if (!periode) continue;
 
-    // Quarter pattern: Q1, Q2, Q3, Q4 — distribute equally across the 3 months
+    // Quarter pattern wins if present
     const qMatch = periode.match(/q\s*([1-4])/);
     if (qMatch) {
-      const q = parseInt(qMatch[1], 10);
-      const startMonth = (q - 1) * 3;
-      for (let i = 0; i < 3; i++) {
-        months[startMonth + i] += l.t_co2 / 3;
-        seen[startMonth + i] = true;
-      }
+      const qIdx = parseInt(qMatch[1], 10) - 1;
+      quarterTotals[qIdx] += l.t_co2;
+      quarterSeen[qIdx] = true;
       continue;
     }
 
-    // Direct month token (Jan, Feb, …) → 100% to that month
+    // Direct month token (Jan, Feb, …)
     let monthIdx = -1;
     for (const key of Object.keys(MONTH_LOOKUP)) {
       if (periode.includes(key)) {
@@ -54,16 +54,35 @@ function buildMonthlyData(lines: CalculatedLine[]): { name: string; value: numbe
       if (numMatch) monthIdx = parseInt(numMatch[1], 10) - 1;
     }
     if (monthIdx >= 0 && monthIdx < 12) {
-      months[monthIdx] += l.t_co2;
-      seen[monthIdx] = true;
+      directByMonth[monthIdx] += l.t_co2;
+      directSeen[monthIdx] = true;
     }
   }
 
-  // Only emit months that actually had bookings (direct or quarterly)
+  // Step 2: combine — for each month, add direct + (its quarter total ÷ 3)
+  const combined = new Array(12).fill(0);
+  const seen = new Array(12).fill(false);
+  for (let m = 0; m < 12; m++) {
+    const qIdx = Math.floor(m / 3);
+    combined[m] = directByMonth[m] + quarterTotals[qIdx] / 3;
+    seen[m] = directSeen[m] || quarterSeen[qIdx];
+  }
+
+  // Diagnostic: log per-month breakdown so distribution is verifiable
+  console.log("[Dashboard] Monthly breakdown:", MONTH_NAMES.map((n, i) => ({
+    month: n,
+    direct: Math.round(directByMonth[i] * 100) / 100,
+    fromQuarter: Math.round((quarterTotals[Math.floor(i / 3)] / 3) * 100) / 100,
+    total: Math.round(combined[i] * 100) / 100,
+    shown: seen[i],
+  })));
+  console.log("[Dashboard] Quarter totals (t CO₂e):", quarterTotals.map((v) => Math.round(v * 100) / 100));
+
+  // Step 3: only emit months that received bookings (direct OR via their quarter)
   return MONTH_NAMES
-    .map((name, i) => ({ name, value: months[i], _seen: seen[i] }))
+    .map((name, i) => ({ name, value: Math.round(combined[i] * 100) / 100, _seen: seen[i] }))
     .filter((m) => m._seen)
-    .map(({ name, value }) => ({ name, value: Math.round(value * 100) / 100 }));
+    .map(({ name, value }) => ({ name, value }));
 }
 
 const ANOMALY_LABELS: Record<string, string> = {
