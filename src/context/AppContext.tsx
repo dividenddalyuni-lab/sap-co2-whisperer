@@ -32,17 +32,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }, 1500);
 
     try {
-      let response: ClaudeResponse;
-      if (useMock || !apiKey) {
-        await new Promise((r) => setTimeout(r, ANALYSIS_STEPS.length * 1500));
-        response = buildFallbackResponse(bookingLines);
-      } else {
+      // 1) Always compute emissions deterministically via Spend-Based EEIO (no API needed for math)
+      const eeio = buildFallbackResponse(bookingLines);
+      let response: ClaudeResponse = eeio;
+
+      // 2) Optionally enrich anomalies + data quality via Claude (math is NOT overridden)
+      if (!useMock && apiKey) {
         try {
-          response = await callClaudeAPI(apiKey, bookingLines);
+          const ai = await callClaudeAPI(apiKey, bookingLines);
+          response = {
+            zeilen: eeio.zeilen, // keep deterministic EEIO classification + factors
+            anomalien: ai.anomalien?.length ? ai.anomalien : eeio.anomalien,
+            datenqualitaet: ai.datenqualitaet ?? eeio.datenqualitaet,
+          };
         } catch (apiErr) {
-          console.warn("Claude API failed, using fallback classifier:", apiErr);
-          response = buildFallbackResponse(bookingLines);
+          console.warn("Claude API failed — using EEIO-only result:", apiErr);
         }
+      } else {
+        // Simulate analysis steps for the mock/no-key path
+        await new Promise((r) => setTimeout(r, ANALYSIS_STEPS.length * 1500));
       }
 
       setClaudeResponse(response);
