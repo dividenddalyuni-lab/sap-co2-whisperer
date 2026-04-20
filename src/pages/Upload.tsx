@@ -120,6 +120,17 @@ export default function UploadPage() {
     startAnalysis(useMock);
   };
 
+  // Live EEIO preview — recompute whenever uploaded data changes
+  const previewLines = useMemo(() => {
+    if (!uploadedLines || uploadedLines.length === 0) return [];
+    const resp = buildFallbackResponse(uploadedLines);
+    return calculateEmissions(uploadedLines, resp);
+  }, [uploadedLines]);
+  const previewTotalT = useMemo(
+    () => previewLines.reduce((s, l) => s + l.t_co2, 0),
+    [previewLines]
+  );
+
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-6">
       <div>
