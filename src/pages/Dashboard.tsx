@@ -140,8 +140,10 @@ export default function DashboardPage() {
   const quality = claudeResponse.datenqualitaet;
   const totalBetrag = bookingLines.reduce((sum, l) => sum + l.betrag, 0);
 
-  const totalSavingsCo2 = savingsMeasures.reduce((a, m) => a + m.savingsCo2, 0);
-  const totalSavingsEur = savingsMeasures.reduce((a, m) => a + m.savingsEur, 0);
+  const allSavings = computeSavings(calculatedLines);
+  const topSavings = allSavings.slice(0, 3);
+  const totalSavingsCo2 = allSavings.reduce((a, m) => a + m.co2Saving, 0);
+  const totalSavingsEur = allSavings.reduce((a, m) => a + m.eurSaving, 0);
 
   const pieData = [
     { name: "Scope 1", value: s1 },
