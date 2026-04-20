@@ -93,9 +93,11 @@ export default function CSRDReportPage() {
             <section>
               <h2 className="text-base font-bold mb-2">Methodik</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Berechnung nach GHG Protocol Corporate Standard. Emissionsfaktoren: UBA 2024, DEFRA 2024.
-                Für Buchungspositionen ohne physische Verbrauchsdaten wurde die EEIO-Methode
-                (Environmentally Extended Input-Output) gemäß GHG Protocol Scope 3 Guidance angewandt.
+                Berechnung nach GHG Protocol Corporate Standard. Methode: Spend-Based EEIO
+                (Environmentally Extended Input-Output) gemäß GHG Protocol Corporate Value Chain
+                (Scope 3) Standard. Alle Emissionen werden aus monetären SAP FI/CO Buchungsdaten
+                abgeleitet — ohne manuelle Eingabe. Emissionsfaktoren: UBA 2024, DEFRA 2024,
+                GHG Protocol EEIO.
               </p>
             </section>
 
@@ -154,29 +156,35 @@ function ScopeSection({ title, description, lines, total }: {
           <table className="w-full text-sm mb-2">
             <thead>
               <tr className="text-xs text-muted-foreground uppercase border-b border-border">
+                <th className="py-2 text-left font-medium">Kostenstelle</th>
                 <th className="py-2 text-left font-medium">Buchungstext</th>
-                <th className="py-2 text-left font-medium">Kategorie</th>
                 <th className="py-2 text-right font-medium">Betrag €</th>
+                <th className="py-2 text-left font-medium">Kategorie</th>
+                <th className="py-2 text-center font-medium">Scope</th>
                 <th className="py-2 text-right font-medium">t CO₂e</th>
+                <th className="py-2 text-right font-medium">Faktor kg/€</th>
                 <th className="py-2 text-left font-medium">Quelle</th>
               </tr>
             </thead>
             <tbody>
               {lines.map((l: any) => (
                 <tr key={l.zeile_id} className="border-b border-border/50">
+                  <td className="py-2 text-xs">{l.original.kostenstelle}</td>
                   <td className="py-2 text-xs">{l.original.buchungstext}</td>
-                  <td className="py-2 text-xs">{l.kategorie}</td>
                   <td className="py-2 text-xs text-right">{formatEuro(l.original.betrag)}</td>
+                  <td className="py-2 text-xs">{l.kategorie}</td>
+                  <td className="py-2 text-xs text-center">{l.scope}</td>
                   <td className="py-2 text-xs text-right font-medium">{formatTonnes(l.t_co2)}</td>
+                  <td className="py-2 text-xs text-right tabular-nums">{l.emissionsfaktor.toLocaleString("de-DE", { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</td>
                   <td className="py-2 text-xs text-muted-foreground">{l.quelle}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-border">
-                <td colSpan={3} className="py-2 text-sm font-bold">Summe</td>
+                <td colSpan={5} className="py-2 text-sm font-bold">Summe</td>
                 <td className="py-2 text-sm font-bold text-right">{formatTonnes(total)} t</td>
-                <td></td>
+                <td colSpan={2}></td>
               </tr>
             </tfoot>
           </table>
