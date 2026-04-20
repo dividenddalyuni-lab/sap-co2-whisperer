@@ -307,7 +307,10 @@ export default function DashboardPage() {
           <div className="bg-card rounded-xl border border-border p-5">
             <h3 className="text-sm font-semibold mb-4">Offene Anomalien</h3>
             <div className="space-y-3">
-              {anomalies.map((a, i) => (
+              {realAnomalies.length === 0 && (
+                <p className="text-xs text-muted-foreground">Keine Anomalien erkannt.</p>
+              )}
+              {realAnomalies.map((a, i) => (
                 <div key={i} className="flex items-start justify-between pb-3 border-b border-border last:border-0">
                   <div>
                     <p className="text-sm font-semibold text-foreground">{a.title}</p>
