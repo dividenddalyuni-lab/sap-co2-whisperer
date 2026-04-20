@@ -39,10 +39,20 @@ export default function DashboardPage() {
     { name: "Scope 3", value: s3 },
   ];
 
+  const sumByCategory = (cats: string[]) =>
+    calculatedLines
+      .filter((l) => cats.includes(l.kategorie))
+      .reduce((s, l) => s + l.original.betrag, 0);
+
+  const stromCost = sumByCategory(["Strom", "Fernwärme"]);
+  const erdgasCost = sumByCategory(["Erdgas"]);
+  const kraftstoffCost = sumByCategory(["Kraftstoff"]);
+  const energyTotal = stromCost + erdgasCost + kraftstoffCost;
+
   const energyCosts = [
-    { label: "Strom", value: totalBetrag * 0.49, color: "hsl(152, 60%, 36%)" },
-    { label: "Erdgas / Wärme", value: totalBetrag * 0.32, color: "hsl(152, 60%, 36%)" },
-    { label: "Kraftstoffe", value: totalBetrag * 0.19, color: "hsl(38, 92%, 50%)" },
+    { label: "Strom / Fernwärme", value: stromCost, color: "hsl(152, 60%, 36%)" },
+    { label: "Erdgas / Wärme", value: erdgasCost, color: "hsl(152, 60%, 36%)" },
+    { label: "Kraftstoffe", value: kraftstoffCost, color: "hsl(38, 92%, 50%)" },
   ];
 
   const anomalies = [
