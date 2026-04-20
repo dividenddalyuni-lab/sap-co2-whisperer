@@ -173,7 +173,7 @@ export default function DashboardPage() {
           <div className="bg-card rounded-xl border border-border p-5">
             <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-3">CO₂-Emissionen Scope 1+2</p>
             <p className="text-3xl font-extrabold text-foreground">{formatTonnes(s1 + s2)} t</p>
-            <p className="text-xs text-primary flex items-center gap-1 mt-2"><ArrowDown className="w-3 h-3" /> −12,0 % vs. 2023</p>
+            <p className="text-xs text-muted-foreground mt-2">Geschäftsjahr 2024</p>
             <div className="w-full h-1.5 bg-muted rounded-full mt-3"><div className="h-full bg-primary rounded-full" style={{ width: "72%" }} /></div>
           </div>
           <div className="bg-card rounded-xl border border-border p-5">
@@ -205,9 +205,11 @@ export default function DashboardPage() {
                 <Area type="monotone" dataKey="value" stroke="hsl(152, 60%, 36%)" fill="url(#colorValue)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
-            <div className="mt-3 px-3 py-2 bg-warning/5 border-l-2 border-warning rounded text-xs text-muted-foreground">
-              September-Rückgang erkannt — <button onClick={() => setScreen("ai-assistant")} className="text-primary font-medium hover:underline">KI-Analyse öffnen →</button>
-            </div>
+            {dropHint && (
+              <div className="mt-3 px-3 py-2 bg-warning/5 border-l-2 border-warning rounded text-xs text-muted-foreground">
+                {dropHint} — <button onClick={() => setScreen("ai-assistant")} className="text-primary font-medium hover:underline">KI-Analyse öffnen →</button>
+              </div>
+            )}
           </div>
 
           {/* Scope Pie */}
