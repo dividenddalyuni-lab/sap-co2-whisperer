@@ -3,14 +3,9 @@ import { formatTonnes, formatNumber, scopeTotal } from "@/lib/co2-utils";
 import { AlertTriangle, ArrowDown, Upload as UploadIcon } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from "recharts";
 import type { CalculatedLine } from "@/lib/types";
+import { computeSavings } from "@/lib/savings";
 
 const SCOPE_COLORS = ["hsl(152, 60%, 36%)", "hsl(38, 92%, 50%)", "hsl(220, 60%, 55%)"];
-
-const savingsMeasures = [
-  { icon: "⚡", title: "Ökostrom Umstellung", description: "Scope 2 eliminieren · Einsparung", savingsEur: 84000, savingsCo2: 960 },
-  { icon: "🚛", title: "Logistikroute optimieren", description: "Lieferant Nordsee Logistik · Einsparung", savingsEur: 12000, savingsCo2: 120 },
-  { icon: "♻️", title: "Lieferant wechseln", description: "Verpackung Müller GmbH → GreenPack · Einsparung", savingsEur: 8000, savingsCo2: 340 },
-];
 
 const MONTH_NAMES = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 const MONTH_LOOKUP: Record<string, number> = {
