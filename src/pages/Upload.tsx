@@ -39,9 +39,11 @@ export default function UploadPage() {
   const [uploadedLines, setUploadedLines] = useState<BookingLine[] | null>(null);
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
+  const [warnings, setWarnings] = useState<string[]>([]);
 
   const parseFile = useCallback((file: File) => {
     setError("");
+    setWarnings([]);
     setFileName(file.name);
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -57,12 +59,21 @@ export default function UploadPage() {
         console.log("[Upload] Detected headers:", headers);
         console.log("[Upload] First 3 raw rows:", JSON.stringify(json.slice(0, 3), null, 2));
 
-        const hKost   = findHeader(headers, ["kostenstelle", "cost center"]);
-        const hKonto  = findHeader(headers, ["konto", "account"]);
-        const hText   = findHeader(headers, ["buchungstext", "description", "text"]);
-        const hBetrag = findHeader(headers, ["betrag", "amount", "eur"]);
-        const hPer    = findHeader(headers, ["periode", "period"]);
+        // Robust column detection — works for SAP, DATEV, and other German/English exports
+        const hKost   = findHeader(headers, ["kostenstelle", "kst", "cost", "center"]);
+        const hKonto  = findHeader(headers, ["sachkonto", "konto", "account", "gl"]);
+        const hText   = findHeader(headers, ["buchungstext", "beschreibung", "bezeichnung", "description", "text"]);
+        const hBetrag = findHeader(headers, ["betrag", "amount", "summe", "wert", "eur"]);
+        const hPer    = findHeader(headers, ["periode", "period", "monat", "month", "datum", "date"]);
         console.log("[Upload] Mapped columns:", { hKost, hKonto, hText, hBetrag, hPer });
+
+        const newWarnings: string[] = [];
+        if (!hKost)   newWarnings.push("Spalte nicht erkannt: Kostenstelle");
+        if (!hKonto)  newWarnings.push("Spalte nicht erkannt: Konto");
+        if (!hText)   newWarnings.push("Spalte nicht erkannt: Buchungstext");
+        if (!hBetrag) newWarnings.push("Spalte nicht erkannt: Betrag");
+        if (!hPer)    newWarnings.push("Spalte nicht erkannt: Periode");
+        setWarnings(newWarnings);
 
         const lines: BookingLine[] = json.map((row, i) => ({
           id: i,
@@ -152,6 +163,16 @@ export default function UploadPage() {
         <div className="flex items-center gap-3 px-4 py-3 bg-destructive/10 border border-destructive/30 rounded-lg">
           <AlertCircle className="w-4 h-4 text-destructive shrink-0" />
           <p className="text-sm text-destructive">{error}</p>
+        </div>
+      )}
+
+      {warnings.length > 0 && (
+        <div className="flex items-start gap-3 px-4 py-3 bg-warning/10 border border-warning/30 rounded-lg">
+          <AlertCircle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+          <div className="text-sm text-warning space-y-0.5">
+            {warnings.map((w) => <p key={w}>{w}</p>)}
+            <p className="text-xs text-muted-foreground mt-1">Verarbeitung läuft mit den verfügbaren Spalten weiter.</p>
+          </div>
         </div>
       )}
 
