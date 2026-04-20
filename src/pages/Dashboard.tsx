@@ -28,7 +28,7 @@ function buildMonthlyData(lines: CalculatedLine[]): { name: string; value: numbe
     const periode = (l.original.periode || "").trim().toLowerCase();
     if (!periode) continue;
 
-    // Quarter pattern: Q1, Q2, Q3, Q4 (with optional year)
+    // Quarter pattern: Q1, Q2, Q3, Q4 — distribute equally across the 3 months
     const qMatch = periode.match(/q\s*([1-4])/);
     if (qMatch) {
       const q = parseInt(qMatch[1], 10);
@@ -40,7 +40,7 @@ function buildMonthlyData(lines: CalculatedLine[]): { name: string; value: numbe
       continue;
     }
 
-    // Month pattern: try to find a month token
+    // Direct month token (Jan, Feb, …) → 100% to that month
     let monthIdx = -1;
     for (const key of Object.keys(MONTH_LOOKUP)) {
       if (periode.includes(key)) {
@@ -59,10 +59,33 @@ function buildMonthlyData(lines: CalculatedLine[]): { name: string; value: numbe
     }
   }
 
+  // Only emit months that actually had bookings (direct or quarterly)
   return MONTH_NAMES
     .map((name, i) => ({ name, value: months[i], _seen: seen[i] }))
     .filter((m) => m._seen)
     .map(({ name, value }) => ({ name, value: Math.round(value * 100) / 100 }));
+}
+
+const ANOMALY_LABELS: Record<string, string> = {
+  hoher_betrag: "Hoher Betrag",
+  duplikat: "Duplikat",
+  ausreisser: "Ausreißer",
+  ausreißer: "Ausreißer",
+  fehlend: "Fehlende Daten",
+  fehlende_daten: "Fehlende Daten",
+  unbekannt: "Unbekannt",
+};
+
+function humanizeAnomalyType(typ: string): string {
+  if (!typ) return "Anomalie";
+  const key = typ.toLowerCase().trim();
+  if (ANOMALY_LABELS[key]) return ANOMALY_LABELS[key];
+  // Generic underscore_case → Title Case German
+  return key
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 }
 
 function detectDrop(data: { name: string; value: number }[]): string | null {
@@ -134,12 +157,16 @@ export default function DashboardPage() {
   const realAnomalies = (claudeResponse.anomalien || []).slice(0, 3).map((a) => {
     const line = bookingLines.find((b) => b.id === a.zeile_id);
     return {
-      title: line?.buchungstext || a.typ,
+      title: line?.buchungstext || humanizeAnomalyType(a.typ),
       detail: line ? `${line.periode} · ${line.kostenstelle}` : a.nachricht,
-      badge: a.typ,
+      badge: humanizeAnomalyType(a.typ),
       badgeColor: "text-destructive",
     };
   });
+
+  // Dynamic Y-axis: 120% of max monthly value
+  const monthlyMax = monthlyData.reduce((m, d) => Math.max(m, d.value), 0);
+  const yAxisMax = monthlyMax > 0 ? Math.ceil(monthlyMax * 1.2) : undefined;
 
   return (
     <>
@@ -200,7 +227,7 @@ export default function DashboardPage() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} domain={[0, yAxisMax ?? "auto"]} />
                 <Tooltip formatter={(v: number) => [v + " t", "CO₂e"]} />
                 <Area type="monotone" dataKey="value" stroke="hsl(152, 60%, 36%)" fill="url(#colorValue)" strokeWidth={2} />
               </AreaChart>
