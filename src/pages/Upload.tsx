@@ -1,11 +1,37 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Upload, FileSpreadsheet, AlertCircle, Database, LinkIcon, FileDigit } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { demoData, sapDemoData, datevDemoData } from "@/lib/demo-data";
 import { BookingLine } from "@/lib/types";
-import { formatEuro } from "@/lib/co2-utils";
+import { formatEuro, formatTonnes, calculateEmissions } from "@/lib/co2-utils";
+import { buildFallbackResponse } from "@/lib/fallback-classifier";
 import SettingsDialog from "@/components/SettingsDialog";
 import * as XLSX from "xlsx";
+
+// Parse German number format: "18.450,00" → 18450.00
+function parseGermanNumber(value: unknown): number {
+  if (value == null || value === "") return 0;
+  if (typeof value === "number") return value;
+  const s = String(value).trim().replace(/[€\s\u00A0]/g, "");
+  if (s.includes(",")) {
+    const cleaned = s.replace(/\./g, "").replace(",", ".");
+    const n = parseFloat(cleaned);
+    return Number.isFinite(n) ? n : 0;
+  }
+  const n = parseFloat(s);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Find first column header matching any of the given keywords (case-insensitive substring)
+function findHeader(headers: string[], keywords: string[]): string | null {
+  const lower = headers.map((h) => ({ raw: h, low: h.toLowerCase() }));
+  for (const kw of keywords) {
+    const k = kw.toLowerCase();
+    const hit = lower.find((h) => h.low.includes(k));
+    if (hit) return hit.raw;
+  }
+  return null;
+}
 
 export default function UploadPage() {
   const { setBookingLines, startAnalysis, apiKey } = useApp();
@@ -21,23 +47,45 @@ export default function UploadPage() {
     reader.onload = (e) => {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
+        const workbook = XLSX.read(data, { type: "array", cellDates: true });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet);
+        const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" });
+
+        if (json.length === 0) throw new Error("Keine Daten gefunden");
+
+        const headers = Object.keys(json[0]);
+        console.log("[Upload] Detected headers:", headers);
+        console.log("[Upload] First 3 raw rows:", JSON.stringify(json.slice(0, 3), null, 2));
+
+        const hKost   = findHeader(headers, ["kostenstelle", "cost center"]);
+        const hKonto  = findHeader(headers, ["konto", "account"]);
+        const hText   = findHeader(headers, ["buchungstext", "description", "text"]);
+        const hBetrag = findHeader(headers, ["betrag", "amount", "eur"]);
+        const hPer    = findHeader(headers, ["periode", "period"]);
+        console.log("[Upload] Mapped columns:", { hKost, hKonto, hText, hBetrag, hPer });
 
         const lines: BookingLine[] = json.map((row, i) => ({
           id: i,
-          kostenstelle: String(row["Kostenstelle"] || row["kostenstelle"] || ""),
-          konto: String(row["Konto"] || row["konto"] || ""),
-          buchungstext: String(row["Buchungstext"] || row["buchungstext"] || ""),
-          betrag: Number(row["Betrag"] || row["betrag"] || row["Betrag €"] || 0),
-          periode: String(row["Periode"] || row["periode"] || ""),
+          kostenstelle: hKost ? String(row[hKost] ?? "") : "",
+          konto:        hKonto ? String(row[hKonto] ?? "") : "",
+          buchungstext: hText ? String(row[hText] ?? "") : "",
+          betrag:       hBetrag ? parseGermanNumber(row[hBetrag]) : 0,
+          periode:      hPer ? String(row[hPer] ?? "") : "",
         }));
 
-        if (lines.length === 0) throw new Error("Keine Daten gefunden");
+        const sumBetrag = lines.reduce((s, l) => s + l.betrag, 0);
+        console.log("[Upload] Total rows parsed:", lines.length);
+        console.log("[Upload] Sum of all Betrag values:", sumBetrag);
+        console.log("[Upload] First parsed row object:", lines[0]);
+
+        if (sumBetrag === 0 && lines.length > 0) {
+          console.warn("[Upload] WARNING: Betrag sum is 0 — check column mapping above");
+        }
+
         setUploadedLines(lines);
         setBookingLines(lines);
       } catch (err) {
+        console.error("[Upload] Parse error:", err);
         setError("Datei konnte nicht gelesen werden. Bitte prüfen Sie das Format.");
       }
     };
