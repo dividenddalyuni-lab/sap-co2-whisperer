@@ -128,11 +128,18 @@ export default function DashboardPage() {
     { label: "Kraftstoffe", value: kraftstoffCost, color: "hsl(38, 92%, 50%)" },
   ];
 
-  const anomalies = [
-    { title: "Stadtwerke Bremerhaven", detail: "Sep 2024 · Buchung FI-4821", badge: "+340 %", badgeColor: "text-destructive" },
-    { title: "Doppelbuchung Logistik", detail: "Aug 2024 · € 12.500", badge: "Duplikat", badgeColor: "text-warning" },
-    { title: "Reisekosten Q3", detail: "Q3 2024 gesamt", badge: "+180 %", badgeColor: "text-destructive" },
-  ];
+  const monthlyData = buildMonthlyData(calculatedLines);
+  const dropHint = detectDrop(monthlyData);
+
+  const realAnomalies = (claudeResponse.anomalien || []).slice(0, 3).map((a) => {
+    const line = bookingLines.find((b) => b.id === a.zeile_id);
+    return {
+      title: line?.buchungstext || a.typ,
+      detail: line ? `${line.periode} · ${line.kostenstelle}` : a.nachricht,
+      badge: a.typ,
+      badgeColor: "text-destructive",
+    };
+  });
 
   return (
     <>
