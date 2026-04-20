@@ -1,14 +1,16 @@
+import { useMemo } from "react";
 import { Leaf, LayoutDashboard, FileText, BarChart3, Diamond, Database } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { cn } from "@/lib/utils";
 import { AppScreen } from "@/lib/types";
+import { detectAnomalies } from "@/lib/anomaly-detection";
 
 const navSections = [
   {
     label: "ANALYSE",
     items: [
       { id: "dashboard" as AppScreen, label: "Dashboard", icon: LayoutDashboard },
-      { id: "anomalies" as AppScreen, label: "Anomalie-Erkennung", icon: Diamond, badge: 3 },
+      { id: "anomalies" as AppScreen, label: "Anomalie-Erkennung", icon: Diamond, dynamicBadge: true as const },
     ],
   },
   {
