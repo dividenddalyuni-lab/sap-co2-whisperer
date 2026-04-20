@@ -1,7 +1,7 @@
 import { useApp } from "@/context/AppContext";
 import { formatTonnes, formatNumber, scopeTotal } from "@/lib/co2-utils";
 import { AlertTriangle, ArrowDown, Upload as UploadIcon } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, AreaChart, Area } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from "recharts";
 import type { CalculatedLine } from "@/lib/types";
 
 const SCOPE_COLORS = ["hsl(152, 60%, 36%)", "hsl(38, 92%, 50%)", "hsl(220, 60%, 55%)"];
@@ -237,19 +237,16 @@ export default function DashboardPage() {
             <h3 className="text-sm font-semibold mb-1">CO₂-Emissionen 2024 — Monatsverlauf</h3>
             <p className="text-xs text-muted-foreground mb-4">in t CO₂e — automatisch aus SAP FICO berechnet</p>
             <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={monthlyData}>
-                <defs>
-                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(152, 60%, 36%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(152, 60%, 36%)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+              <BarChart data={monthlyData} barCategoryGap="20%">
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} domain={[0, yAxisMax ?? "auto"]} />
-                <Tooltip formatter={(v: number) => [v + " t", "CO₂e"]} />
-                <Area type="monotone" dataKey="value" stroke="hsl(152, 60%, 36%)" fill="url(#colorValue)" strokeWidth={2} />
-              </AreaChart>
+                <Tooltip
+                  formatter={(v: number) => [formatNumber(v, 2) + " t", "CO₂e"]}
+                  cursor={{ fill: "hsl(var(--muted) / 0.4)" }}
+                />
+                <Bar dataKey="value" fill="hsl(152, 60%, 36%)" radius={[4, 4, 0, 0]} />
+              </BarChart>
             </ResponsiveContainer>
             {dropHint && (
               <div className="mt-3 px-3 py-2 bg-warning/5 border-l-2 border-warning rounded text-xs text-muted-foreground">
