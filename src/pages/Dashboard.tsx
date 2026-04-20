@@ -161,7 +161,7 @@ export default function DashboardPage() {
           <div className="bg-card rounded-xl border border-border p-5">
             <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-3">CO₂ Scope 3 — Lieferkette</p>
             <p className="text-3xl font-extrabold text-foreground">{formatTonnes(s3)} t</p>
-            <p className="text-xs text-primary flex items-center gap-1 mt-2"><ArrowDown className="w-3 h-3" /> −8,2 % vs. 2023</p>
+            <p className="text-xs text-muted-foreground mt-2">Geschäftsjahr 2024</p>
             <div className="w-full h-1.5 bg-muted rounded-full mt-3"><div className="h-full bg-primary rounded-full" style={{ width: "65%" }} /></div>
           </div>
           <div className="bg-card rounded-xl border border-border p-5">
