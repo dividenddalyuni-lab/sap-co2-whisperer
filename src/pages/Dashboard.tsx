@@ -1,7 +1,8 @@
 import { useApp } from "@/context/AppContext";
-import { formatTonnes, formatNumber, scopeTotal, qualityColor, formatEuro } from "@/lib/co2-utils";
-import { AlertTriangle, TrendingDown, ArrowDown } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, AreaChart, Area } from "recharts";
+import { formatTonnes, formatNumber, scopeTotal } from "@/lib/co2-utils";
+import { AlertTriangle, ArrowDown, Upload as UploadIcon } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, AreaChart, Area } from "recharts";
+import type { CalculatedLine } from "@/lib/types";
 
 const SCOPE_COLORS = ["hsl(152, 60%, 36%)", "hsl(38, 92%, 50%)", "hsl(220, 60%, 55%)"];
 
@@ -11,17 +12,89 @@ const savingsMeasures = [
   { icon: "♻️", title: "Lieferant wechseln", description: "Verpackung Müller GmbH → GreenPack · Einsparung", savingsEur: 8000, savingsCo2: 340 },
 ];
 
-const monthlyData = [
-  { name: "Jan", value: 320 }, { name: "Feb", value: 290 }, { name: "Mär", value: 340 },
-  { name: "Apr", value: 310 }, { name: "Mai", value: 280 }, { name: "Jun", value: 300 },
-  { name: "Jul", value: 350 }, { name: "Aug", value: 330 }, { name: "Sep", value: 180 },
-  { name: "Okt", value: 310 }, { name: "Nov", value: 320 }, { name: "Dez", value: 315 },
-];
+const MONTH_NAMES = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+const MONTH_LOOKUP: Record<string, number> = {
+  jan: 0, januar: 0, feb: 1, februar: 1, mär: 2, maerz: 2, mar: 2, märz: 2,
+  apr: 3, april: 3, mai: 4, may: 4, jun: 5, juni: 5, jul: 6, juli: 6,
+  aug: 7, august: 7, sep: 8, sept: 8, september: 8,
+  okt: 9, oct: 9, oktober: 9, nov: 10, november: 10, dez: 11, dec: 11, dezember: 11,
+};
+
+function buildMonthlyData(lines: CalculatedLine[]): { name: string; value: number }[] {
+  const months = new Array(12).fill(0);
+  const seen = new Array(12).fill(false);
+
+  for (const l of lines) {
+    const periode = (l.original.periode || "").trim().toLowerCase();
+    if (!periode) continue;
+
+    // Quarter pattern: Q1, Q2, Q3, Q4 (with optional year)
+    const qMatch = periode.match(/q\s*([1-4])/);
+    if (qMatch) {
+      const q = parseInt(qMatch[1], 10);
+      const startMonth = (q - 1) * 3;
+      for (let i = 0; i < 3; i++) {
+        months[startMonth + i] += l.t_co2 / 3;
+        seen[startMonth + i] = true;
+      }
+      continue;
+    }
+
+    // Month pattern: try to find a month token
+    let monthIdx = -1;
+    for (const key of Object.keys(MONTH_LOOKUP)) {
+      if (periode.includes(key)) {
+        monthIdx = MONTH_LOOKUP[key];
+        break;
+      }
+    }
+    // Numeric pattern like 2024-03 or 03/2024
+    if (monthIdx < 0) {
+      const numMatch = periode.match(/(?:^|\D)(0?[1-9]|1[0-2])(?:\D|$)/);
+      if (numMatch) monthIdx = parseInt(numMatch[1], 10) - 1;
+    }
+    if (monthIdx >= 0 && monthIdx < 12) {
+      months[monthIdx] += l.t_co2;
+      seen[monthIdx] = true;
+    }
+  }
+
+  return MONTH_NAMES
+    .map((name, i) => ({ name, value: months[i], _seen: seen[i] }))
+    .filter((m) => m._seen)
+    .map(({ name, value }) => ({ name, value: Math.round(value * 100) / 100 }));
+}
+
+function detectDrop(data: { name: string; value: number }[]): string | null {
+  if (data.length < 3) return null;
+  const avg = data.reduce((s, d) => s + d.value, 0) / data.length;
+  for (let i = 1; i < data.length; i++) {
+    if (data[i].value < avg * 0.6 && data[i - 1].value > avg * 0.8) {
+      return `${data[i].name}-Rückgang erkannt`;
+    }
+  }
+  return null;
+}
 
 export default function DashboardPage() {
   const { calculatedLines, claudeResponse, bookingLines, setScreen } = useApp();
 
-  if (!claudeResponse) return null;
+  if (!claudeResponse || calculatedLines.length === 0) {
+    return (
+      <div className="p-6">
+        <div className="bg-card border border-border rounded-xl p-12 flex flex-col items-center justify-center text-center min-h-[60vh]">
+          <UploadIcon className="w-12 h-12 text-muted-foreground mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Bitte SAP Export hochladen</h2>
+          <p className="text-sm text-muted-foreground mb-6 max-w-md">
+            Bitte SAP Export hochladen um Dashboard zu befüllen. Alle Kennzahlen werden automatisch aus den Buchungsdaten berechnet.
+          </p>
+          <button onClick={() => setScreen("upload")} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90">
+            Zum Upload
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const s1 = scopeTotal(calculatedLines, 1);
   const s2 = scopeTotal(calculatedLines, 2);
