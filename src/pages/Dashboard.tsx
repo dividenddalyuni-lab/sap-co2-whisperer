@@ -324,23 +324,29 @@ export default function DashboardPage() {
                 <h3 className="text-sm font-semibold">KI-Sparpotenzial</h3>
                 <p className="text-xs text-muted-foreground">Automatisch erkannte Maßnahmen · GJ 2024</p>
               </div>
-              <span className="px-2.5 py-1 border border-border rounded-lg text-xs font-medium">{savingsMeasures.length} Empfehlungen</span>
+              <span className="px-2.5 py-1 border border-border rounded-lg text-xs font-medium">{allSavings.length} Empfehlungen</span>
             </div>
             <div className="space-y-3">
-              {savingsMeasures.map((m, i) => (
-                <div key={i} className="flex items-start justify-between pb-3 border-b border-border last:border-0">
+              {topSavings.length === 0 && (
+                <p className="text-xs text-muted-foreground">Keine Sparpotenziale erkannt.</p>
+              )}
+              {topSavings.map((m) => (
+                <div key={m.id} className="flex items-start justify-between pb-3 border-b border-border last:border-0">
                   <div>
                     <p className="text-sm font-semibold flex items-center gap-2"><span>{m.icon}</span> {m.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{m.description} <span className="font-semibold text-foreground">€ {formatNumber(m.savingsEur, 0)}/Jahr</span></p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{m.description.split(".")[0]} · <span className="font-semibold text-foreground">€ {formatNumber(m.eurSaving, 0)}/Jahr</span></p>
                   </div>
-                  <span className="shrink-0 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-lg">− {formatNumber(m.savingsCo2, 0)} t CO₂</span>
+                  <span className="shrink-0 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-lg">− {formatNumber(m.co2Saving, 1)} t CO₂</span>
                 </div>
               ))}
             </div>
             <div className="mt-4 px-4 py-3 bg-primary/5 rounded-lg flex items-center justify-between">
               <span className="text-sm font-semibold text-primary">Gesamt Potenzial</span>
-              <span className="text-sm font-semibold text-foreground">− {formatNumber(totalSavingsCo2, 0)} t CO₂ · € {formatNumber(totalSavingsEur, 0)}/Jahr</span>
+              <span className="text-sm font-semibold text-foreground">− {formatNumber(totalSavingsCo2, 1)} t CO₂ · € {formatNumber(totalSavingsEur, 0)}/Jahr</span>
             </div>
+            <button onClick={() => setScreen("savings")} className="mt-3 w-full text-center text-xs text-primary font-medium hover:underline">
+              Alle Empfehlungen →
+            </button>
           </div>
 
           {/* Offene Anomalien */}
