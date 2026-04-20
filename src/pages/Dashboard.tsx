@@ -80,7 +80,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-4 gap-4">
           <div className="bg-card rounded-xl border border-border p-5">
             <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-3">CO₂ Scope 3 — Lieferkette</p>
-            <p className="text-3xl font-extrabold text-foreground">{formatNumber(s3 * 1000 / total * 967 / 1000, 0)} t</p>
+            <p className="text-3xl font-extrabold text-foreground">{formatTonnes(s3)} t</p>
             <p className="text-xs text-primary flex items-center gap-1 mt-2"><ArrowDown className="w-3 h-3" /> −8,2 % vs. 2023</p>
             <div className="w-full h-1.5 bg-muted rounded-full mt-3"><div className="h-full bg-primary rounded-full" style={{ width: "65%" }} /></div>
           </div>
@@ -92,7 +92,7 @@ export default function DashboardPage() {
           </div>
           <div className="bg-card rounded-xl border border-border p-5">
             <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-3">CO₂-Emissionen Scope 1+2</p>
-            <p className="text-3xl font-extrabold text-foreground">{formatNumber(total * 1000, 0).replace(/\./g, '.')} t</p>
+            <p className="text-3xl font-extrabold text-foreground">{formatTonnes(s1 + s2)} t</p>
             <p className="text-xs text-primary flex items-center gap-1 mt-2"><ArrowDown className="w-3 h-3" /> −12,0 % vs. 2023</p>
             <div className="w-full h-1.5 bg-muted rounded-full mt-3"><div className="h-full bg-primary rounded-full" style={{ width: "72%" }} /></div>
           </div>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-sm font-bold">{formatNumber(total * 1000, 0)}</span>
+                  <span className="text-sm font-bold">{formatTonnes(total)}</span>
                   <span className="text-[9px] text-muted-foreground">t CO₂e gesamt</span>
                 </div>
               </div>
@@ -186,10 +186,10 @@ export default function DashboardPage() {
               <div key={i} className="mb-3">
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-foreground">{item.label}</span>
-                  <span className="font-medium text-foreground">€ {formatNumber(item.value / 1000000, 2)} Mio.</span>
+                  <span className="font-medium text-foreground">€ {formatNumber(item.value, 0)}</span>
                 </div>
                 <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${totalBetrag > 0 ? (item.value / totalBetrag) * 100 : 0}%`, background: item.color }} />
+                  <div className="h-full rounded-full" style={{ width: `${energyTotal > 0 ? (item.value / energyTotal) * 100 : 0}%`, background: item.color }} />
                 </div>
               </div>
             ))}
