@@ -166,6 +166,16 @@ export default function UploadPage() {
         </div>
       )}
 
+      {warnings.length > 0 && (
+        <div className="flex items-start gap-3 px-4 py-3 bg-warning/10 border border-warning/30 rounded-lg">
+          <AlertCircle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+          <div className="text-sm text-warning space-y-0.5">
+            {warnings.map((w) => <p key={w}>{w}</p>)}
+            <p className="text-xs text-muted-foreground mt-1">Verarbeitung läuft mit den verfügbaren Spalten weiter.</p>
+          </div>
+        </div>
+      )}
+
       {/* Upload Area */}
       <div
         onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
