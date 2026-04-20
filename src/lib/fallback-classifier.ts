@@ -8,23 +8,24 @@ interface EeioRule {
   quelle: string;
 }
 
-// Single source of truth: Spend-Based EEIO factors (kg CO2e / EUR)
+// Single source of truth: Spend-Based EEIO factors in kg CO2e / EUR.
+// Formula (applied in calculateEmissions): t CO2e = Betrag (€) × Faktor (kg/€) ÷ 1000
 // Scope 1 & 2 factors are pre-converted EEIO-equivalents (activity factor × avg. price)
-// so the same formula t CO2e = Betrag € × Faktor / 1000 works for ALL lines.
+// so the same formula works for ALL lines.
 const RULES: Record<string, EeioRule> = {
-  strom:        { kategorie: "Strom",            scope: 2, faktor: 0.00136, quelle: "UBA 2024" },
-  fernwaerme:   { kategorie: "Fernwärme",        scope: 2, faktor: 0.00180, quelle: "UBA 2024" },
-  kraftstoff:   { kategorie: "Kraftstoff",       scope: 1, faktor: 0.00143, quelle: "DEFRA 2024" },
-  erdgas:       { kategorie: "Erdgas",           scope: 1, faktor: 0.00253, quelle: "UBA 2024" },
-  transport_str:{ kategorie: "Transport Straße", scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.00050, quelle: "GHG Protocol EEIO" },
-  transport_see:{ kategorie: "Transport See",    scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.00030, quelle: "GHG Protocol EEIO" },
-  transport_luft:{kategorie: "Transport Luft",   scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.00120, quelle: "GHG Protocol EEIO" },
-  dienstreisen: { kategorie: "Dienstreisen",     scope: 3, scope3_kategorie: "Kategorie 6: Geschäftsreisen",     faktor: 0.00030, quelle: "GHG Protocol EEIO" },
-  verpackung:   { kategorie: "Verpackung",       scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00040, quelle: "GHG Protocol EEIO" },
-  rohwaren:     { kategorie: "Rohwaren",         scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00060, quelle: "GHG Protocol EEIO" },
-  abfall:       { kategorie: "Abfall",           scope: 3, scope3_kategorie: "Kategorie 5: Abfall",              faktor: 0.00060, quelle: "GHG Protocol EEIO" },
-  wasser:       { kategorie: "Wasser",           scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00040, quelle: "GHG Protocol EEIO" },
-  sonstiges:    { kategorie: "Sonstige",         scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.00030, quelle: "GHG Protocol EEIO" },
+  strom:        { kategorie: "Strom",            scope: 2, faktor: 1.36, quelle: "UBA 2024" },
+  fernwaerme:   { kategorie: "Fernwärme",        scope: 2, faktor: 1.80, quelle: "UBA 2024" },
+  kraftstoff:   { kategorie: "Kraftstoff",       scope: 1, faktor: 1.43, quelle: "DEFRA 2024" },
+  erdgas:       { kategorie: "Erdgas",           scope: 1, faktor: 2.53, quelle: "UBA 2024" },
+  transport_str:{ kategorie: "Transport Straße", scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.50, quelle: "GHG Protocol EEIO" },
+  transport_see:{ kategorie: "Transport See",    scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 0.30, quelle: "GHG Protocol EEIO" },
+  transport_luft:{kategorie: "Transport Luft",   scope: 3, scope3_kategorie: "Kategorie 4: Upstream Transport",  faktor: 1.20, quelle: "GHG Protocol EEIO" },
+  dienstreisen: { kategorie: "Dienstreisen",     scope: 3, scope3_kategorie: "Kategorie 6: Geschäftsreisen",     faktor: 0.30, quelle: "GHG Protocol EEIO" },
+  verpackung:   { kategorie: "Verpackung",       scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.40, quelle: "GHG Protocol EEIO" },
+  rohwaren:     { kategorie: "Rohwaren",         scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.60, quelle: "GHG Protocol EEIO" },
+  abfall:       { kategorie: "Abfall",           scope: 3, scope3_kategorie: "Kategorie 5: Abfall",              faktor: 0.60, quelle: "GHG Protocol EEIO" },
+  wasser:       { kategorie: "Wasser",           scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.40, quelle: "GHG Protocol EEIO" },
+  sonstiges:    { kategorie: "Sonstige",         scope: 3, scope3_kategorie: "Kategorie 1: Eingekaufte Güter",   faktor: 0.30, quelle: "GHG Protocol EEIO" },
 };
 
 function kontoIn(konto: string, from: number, to: number): boolean {
