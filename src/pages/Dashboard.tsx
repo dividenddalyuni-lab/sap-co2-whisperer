@@ -1,7 +1,7 @@
 import { useApp } from "@/context/AppContext";
 import { formatTonnes, formatNumber, scopeTotal } from "@/lib/co2-utils";
 import { AlertTriangle, ArrowDown, Upload as UploadIcon } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, AreaChart, Area } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from "recharts";
 import type { CalculatedLine } from "@/lib/types";
 
 const SCOPE_COLORS = ["hsl(152, 60%, 36%)", "hsl(38, 92%, 50%)", "hsl(220, 60%, 55%)"];
